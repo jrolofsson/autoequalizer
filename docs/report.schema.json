@@ -1,0 +1,154 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://autoequalizer.local/report.schema.json",
+  "title": "AutoEqualizer File Report",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "status",
+    "mode",
+    "inputPath",
+    "summary",
+    "profileBefore",
+    "hotspots",
+    "guardrails",
+    "requestedOverrides",
+    "segments"
+  ],
+  "properties": {
+    "schemaVersion": { "type": "string" },
+    "status": { "type": "string" },
+    "mode": { "type": "string", "enum": ["preserve", "artifact-safe", "normal", "aggressive"] },
+    "inputPath": { "type": "string" },
+    "outputPath": { "type": ["string", "null"] },
+    "spectrogramComparisonPath": { "type": ["string", "null"] },
+    "summary": { "type": "string" },
+    "loudnessProfile": { "type": "string" },
+    "targetIntegratedLufs": { "type": "number" },
+    "targetTruePeakDbtp": { "type": "number" },
+    "loudnessTargetInferred": { "type": "boolean" },
+    "warnings": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "errors": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "guardrails": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "requestedOverrides": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/requestedOverride" }
+    },
+    "profileBefore": { "$ref": "#/$defs/fileProfile" },
+    "profileAfter": {
+      "anyOf": [
+        { "$ref": "#/$defs/fileProfile" },
+        { "type": "null" }
+      ]
+    },
+    "treatedAsFragile": { "type": "boolean" },
+    "treatedAsSourceBaked": { "type": "boolean" },
+    "normalizationGainDbApplied": { "type": "number" },
+    "hotspots": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/hotspot" }
+    },
+    "segments": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/segmentDecision" }
+    }
+  },
+  "$defs": {
+    "fileProfile": {
+      "type": "object",
+      "properties": {
+        "integratedRmsDbfs": { "type": "number" },
+        "peakDbfs": { "type": "number" },
+        "dynamicRangeDb": { "type": "number" },
+        "meanSpectralCentroidHz": { "type": "number" },
+        "meanLowBandRatio": { "type": "number" },
+        "meanUpperMidRatio": { "type": "number" },
+        "meanAirRatio": { "type": "number" },
+        "meanFlatness": { "type": "number" },
+        "meanSibilantActivity": { "type": "number" },
+        "meanTransientness": { "type": "number" },
+        "meanHighFrequencyBalance": { "type": "number" },
+        "voicedFrameRatio": { "type": "number" },
+        "brightnessBaseline": { "type": "number" },
+        "harshnessBaseline": { "type": "number" },
+        "fragilityScore": { "type": "number" },
+        "sourceBakedScore": { "type": "number" },
+        "integratedLufs": { "type": "number" },
+        "loudnessRangeLu": { "type": "number" },
+        "momentaryMaxLufs": { "type": "number" },
+        "shortTermMaxLufs": { "type": "number" },
+        "truePeakDbtp": { "type": "number" }
+      }
+    },
+    "hotspot": {
+      "type": "object",
+      "properties": {
+        "startSeconds": { "type": "number" },
+        "endSeconds": { "type": "number" },
+        "label": { "type": "string" },
+        "score": { "type": "number" },
+        "rationale": { "type": "string" }
+      }
+    },
+    "requestedOverride": {
+      "type": "object",
+      "properties": {
+        "startSeconds": { "type": "number" },
+        "endSeconds": { "type": "number" },
+        "policy": {
+          "type": "string",
+          "enum": ["artifact-safe", "preserve", "bypass"]
+        }
+      }
+    },
+    "segmentDecision": {
+      "type": "object",
+      "properties": {
+        "frameIndex": { "type": "integer" },
+        "startSeconds": { "type": "number" },
+        "endSeconds": { "type": "number" },
+        "harshnessScore": { "type": "number" },
+        "brightnessScore": { "type": "number" },
+        "fragilityScore": { "type": "number" },
+        "confidence": { "type": "number" },
+        "highPassCutoffHz": { "type": "number" },
+        "harshCenterHz": { "type": "number" },
+        "harshCutDb": { "type": "number" },
+        "deEssThreshold": { "type": "number" },
+        "deEssMaxReductionDb": { "type": "number" },
+        "hfSmoothingDb": { "type": "number" },
+        "compressionThresholdDb": { "type": "number" },
+        "compressionRatio": { "type": "number" },
+        "processMix": { "type": "number" },
+        "overridePolicy": {
+          "type": ["string", "null"],
+          "enum": ["artifact-safe", "preserve", "bypass", null]
+        },
+        "rationale": { "type": "string" },
+        "guardrails": {
+          "type": "object",
+          "properties": {
+            "brightProtection": { "type": "boolean" },
+            "highRegisterProtection": { "type": "boolean" },
+            "metallicCorrectionOverride": { "type": "boolean" },
+            "limitReachedArtifact": { "type": "boolean" },
+            "fragileMaterial": { "type": "boolean" },
+            "sourceBakedFallback": { "type": "boolean" },
+            "deEsserClamped": { "type": "boolean" },
+            "compressionRelaxed": { "type": "boolean" },
+            "lowConfidenceFallback": { "type": "boolean" }
+          }
+        }
+      }
+    }
+  }
+}
